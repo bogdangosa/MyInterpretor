@@ -22,9 +22,10 @@ public class Repository implements IRepository {
         this.logFilePath = logFilePath;
     }
 
+
     @Override
     public ProgramState getCurrentProgram() {
-        return this.programStates.get(0);
+        return programStates.getFirst();
     }
 
     @Override
@@ -33,19 +34,30 @@ public class Repository implements IRepository {
     }
 
     @Override
-    public void logProgramState() throws MyException {
+    public void logProgramState(ProgramState currentProgram) throws MyException {
         //here you can display the prg state
-        System.out.println(getCurrentProgram().toString());
+        System.out.println(currentProgram.toString());
     }
 
     @Override
-    public void logProgramStateExecToFile() throws MyException, IOException {
-        ProgramState currentProgram = getCurrentProgram();
+    public void setProgramList(List<ProgramState> newProgramList) {
+        programStates = newProgramList;
+    }
+
+    @Override
+    public List<ProgramState> getProgramList() {
+        return programStates;
+    }
+
+    @Override
+    public void logProgramStateExecToFile(ProgramState currentProgram) throws MyException, IOException {
         PrintWriter logFile= new PrintWriter(new BufferedWriter(new FileWriter(logFilePath, true)));
+        logFile.println("Program "+currentProgram.getId());
         logFile.println(currentProgram.getExecutionStack().toString());
         logFile.println(currentProgram.getSymbolTable().toString());
         logFile.println(currentProgram.getOutput().toString());
         logFile.println(currentProgram.getFileTable().toString());
+        logFile.println(currentProgram.getHeapTable().toString());
         logFile.println("----------------------------------------");
         logFile.close();
     }

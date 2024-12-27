@@ -3,7 +3,9 @@ package Models.Exp;
 import Containers.MyIDictionary;
 import Exceptions.MyException;
 import Exceptions.SymbolTableException;
+import Models.ProgramState.HeapTable;
 import Models.ProgramState.SymbolTable;
+import Models.Type.Type;
 import Models.Value.Value;
 
 public class VarExp implements Exp{
@@ -14,7 +16,7 @@ public class VarExp implements Exp{
     }
 
     @Override
-    public Value eval(SymbolTable table) throws MyException {
+    public Value eval(SymbolTable table, HeapTable heap) throws MyException {
         Value val = table.lookUp(id);
         if (val == null)
             throw new SymbolTableException("Variable "+id+" not found!");
@@ -24,6 +26,11 @@ public class VarExp implements Exp{
     @Override
     public Exp deepCopy() {
         return new VarExp(id);
+    }
+
+    @Override
+    public Type typecheck(MyIDictionary<String, Type> typeEnv) throws MyException {
+        return typeEnv.lookUp(id);
     }
 
     @Override

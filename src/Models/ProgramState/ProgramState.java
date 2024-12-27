@@ -1,13 +1,10 @@
 package Models.ProgramState;
 
-import Containers.MyIDictionary;
-import Containers.MyIList;
-import Containers.MyIStack;
-import Models.Statement.IStatement;
-import Models.Value.StringValue;
-import Models.Value.Value;
 
-import java.io.BufferedReader;
+import Exceptions.ExecutionException;
+import Exceptions.MyException;
+import Models.Statement.IStatement;
+
 
 public class ProgramState {
 
@@ -15,6 +12,9 @@ public class ProgramState {
     private ExecutionStack execution_stack;
     private Output output;
     private FileTable file_table;
+    private HeapTable heap_table;
+    private int id;
+    public static int maxId = 1;
 
     private IStatement original_program;
 
@@ -30,25 +30,55 @@ public class ProgramState {
         return output;
     }
 
+    public IStatement getOriginalProgram(){
+        return original_program;
+    }
+
     public FileTable getFileTable() {return file_table;}
 
-    public ProgramState(ExecutionStack execution_stack, SymbolTable symbol_table, Output out,FileTable file_table, IStatement prog) {
+    public HeapTable getHeapTable() {return heap_table;}
+
+    public Boolean isNotCompleted() {
+        return !execution_stack.isEmpty();
+    }
+
+    private static synchronized int initializeId(){
+        return maxId++;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public ProgramState(ExecutionStack execution_stack, SymbolTable symbol_table, Output out,FileTable file_table,HeapTable heap_table, IStatement prog) {
         this.execution_stack = execution_stack;
         this.symbol_table = symbol_table;
         this.output = out;
         this.file_table = file_table;
+        this.heap_table = heap_table;
+        this.id = initializeId();
 
         this.original_program = prog;
 
         this.execution_stack.push(prog);
     }
 
+    public ProgramState oneStep() throws MyException{
+        if(execution_stack.isEmpty())
+            throw new MyException("prgstate stack is empty");
+
+        IStatement  currentStatement = execution_stack.pop();
+        return currentStatement.execute(this);
+    }
+
     @Override
     public String toString() {
-        return this.execution_stack.toString() +
+        return  "Program "+ this.id +
+                "\n" + this.execution_stack.toString() +
                 "\n" + this.symbol_table.toString() +
                 "\n" + this.output.toString() +
-                "\n" + this.file_table.toString();
+                "\n" + this.file_table.toString() +
+                "\n" + this.heap_table.toString();
     }
 
 }

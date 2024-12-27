@@ -25,7 +25,7 @@ public class AssignStmt implements IStatement {
     public ProgramState execute(ProgramState state) throws MyException {
         SymbolTable symbol_table = state.getSymbolTable();
         if(symbol_table.isDefined(id)){
-            Value val = this.exp.eval(symbol_table);
+            Value val = this.exp.eval(symbol_table,state.getHeapTable());
             Type typeId= (symbol_table.lookUp(id)).getType();
             if(val.getType().toString().equals(typeId.toString())) {
                 symbol_table.update(id, val);
@@ -34,12 +34,22 @@ public class AssignStmt implements IStatement {
                     "the assigned expression do not match");
         }
         else throw new SymbolTableException("the used variable" +id + " was not declared before");
-        return state;
+        return null;
     }
 
     @Override
     public IStatement deepCopy() {
         return new AssignStmt(id, exp.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, Type> typecheck(MyIDictionary<String, Type> typeEnv) throws MyException {
+        Type typevar = typeEnv.lookUp(id);
+        Type typexp = exp.typecheck(typeEnv);
+        if (typevar.equals(typexp))
+            return typeEnv;
+        else
+            throw new MyException("Assignment: right hand side and left hand side have different types ");
     }
 
     @Override

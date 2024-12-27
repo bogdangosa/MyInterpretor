@@ -1,24 +1,18 @@
-import Containers.*;
+import Containers.MyDictionary;
+import Containers.MyIDictionary;
 import Controller.Controller;
 import Models.Command.ExitCommand;
 import Models.Command.RunCommand;
-import Models.Exp.ArithExp;
-import Models.Exp.ValueExp;
-import Models.Exp.VarExp;
+import Models.Exp.*;
 import Models.ProgramState.*;
 import Models.Statement.*;
-import Models.Type.BoolType;
-import Models.Type.IntType;
-import Models.Type.StringType;
+import Models.Type.*;
 import Models.Value.BoolValue;
 import Models.Value.IntValue;
 import Models.Value.StringValue;
-import Models.Value.Value;
 import Repository.IRepository;
 import Repository.Repository;
 import View.TextMenu;
-
-import java.io.BufferedReader;
 
 public class Interpreter {
 
@@ -52,25 +46,104 @@ public class Interpreter {
                 new CloseRFile(new VarExp("varf"))
                 ))))))));
 
-        Controller ctr1 = createProgramController(ex1,"logs1.txt");
-        Controller ctr2 = createProgramController(ex2,"logs2.txt");
-        Controller ctr3 = createProgramController(ex3,"logs3.txt");
-        Controller ctr4 = createProgramController(ex4,"logs4.txt");
+        //   Ref int v;new(v,20);Ref Ref int a; new(a,v);print(v);print(a)
+        IStatement ex5 = new CompStmt(new VarDeclStmt("v",new RefType(new IntType())),new CompStmt(
+                new NewStmt("v",new ValueExp(new StringValue("20"))),new CompStmt(
+                new VarDeclStmt("a",new RefType(new RefType(new IntType()))),new CompStmt(
+                new NewStmt("a",new VarExp("v")),new CompStmt(
+                new PrintStmt(new VarExp("v")),new PrintStmt(new VarExp("a"))
+                )))));
+
+        //Ref int v;new(v,20);Ref Ref int a; new(a,v);print(rH(v));print(rH(rH(a))+5)
+        IStatement ex6 = new CompStmt(new VarDeclStmt("v",new RefType(new IntType())),new CompStmt(
+                new NewStmt("v",new ValueExp(new IntValue(20))),new CompStmt(
+                new VarDeclStmt("a",new RefType(new RefType(new IntType()))),new CompStmt(
+                new NewStmt("a",new VarExp("v")),new CompStmt(
+                new PrintStmt(new readHeapExp(new VarExp("v"))),
+                new PrintStmt(new ArithExp(
+                        '+',new readHeapExp(new VarExp("v")),new ValueExp(new IntValue(5))))
+        )))));
+
+        //Ref int v;new(v,20);print(rH(v)); wH(v,30);print(rH(v)+5);
+        IStatement ex7 = new CompStmt(new VarDeclStmt("v",new RefType(new IntType())),new CompStmt(
+                new NewStmt("v",new ValueExp(new IntValue(20))),new CompStmt(
+                new PrintStmt(new readHeapExp(new VarExp("v"))),new CompStmt(
+                        new writeHeapStmt("v",new ValueExp(new IntValue(30))),
+                        new PrintStmt(new ArithExp(
+                                '+',new readHeapExp(new VarExp("v")),new ValueExp(new IntValue(5))))
+                ))));
+
+        //  int v; v=4; (while (v>0) print(v);v=v-1);print(v)
+        IStatement ex8 = new CompStmt(new VarDeclStmt("v",new IntType()),new CompStmt(
+                new AssignStmt("v",new ValueExp(new IntValue(4))),new CompStmt(
+                new WhileStmt(new RelationalExp(new VarExp("v"),new ValueExp(new IntValue(0)),">"),
+                new CompStmt(new PrintStmt(new VarExp("v")),
+                new AssignStmt("v",new ArithExp('-',new VarExp("v"),new ValueExp(new IntValue(1)))))),
+                new PrintStmt(new VarExp("v"))
+        )));
+
+        // Ref int v;new(v,20);Ref Ref int a; new(a,v); new(v,30);print(rH(rH(a)))
+        IStatement ex9 = new CompStmt(
+                new VarDeclStmt("v", new RefType(new IntType())),
+                new CompStmt(new NewStmt("v", new ValueExp(new IntValue(20))),
+                        new CompStmt(
+                                new VarDeclStmt("a",
+                                        new RefType(new RefType(new IntType()))),
+                                new CompStmt(
+                                        new NewStmt("a",
+                                                new VarExp("v")),
+                                        new CompStmt(
+                                                new NewStmt("v",
+                                                        new ValueExp(
+                                                                new IntValue(30))),
+                                                new PrintStmt(
+                                                        new readHeapExp(
+                                                                new readHeapExp(
+                                                                        new VarExp(
+                                                                                "a")))))))));
+
+        IStatement ex10 = new CompStmt(new VarDeclStmt("v", new IntType()), new CompStmt(new VarDeclStmt("a", new RefType(new IntType())),
+                new CompStmt(new AssignStmt("v", new ValueExp(new IntValue(10))), new CompStmt(new NewStmt("a", new ValueExp(new IntValue(22))),
+                        new CompStmt(new forkStmt(new CompStmt(new writeHeapStmt("a", new ValueExp(new IntValue(30))), new CompStmt(new AssignStmt("v", new ValueExp(new IntValue(32))),
+                                new CompStmt(new PrintStmt(new VarExp("v")), new PrintStmt(new readHeapExp(new VarExp("a"))))))),
+                                new CompStmt(new PrintStmt(new VarExp("v")), new PrintStmt(new readHeapExp(new VarExp("a")))))))));
+
+
         TextMenu menu = new TextMenu();
-        menu.addCommand(new ExitCommand("0", "exit"));
-        menu.addCommand(new RunCommand("1","Example 1",ctr1));
-        menu.addCommand(new RunCommand("2","Example 2",ctr2));
-        menu.addCommand(new RunCommand("3","Example 3",ctr3));
-        menu.addCommand(new RunCommand("4","Example 4",ctr4));
+        createProgram(menu,ex1,1);
+        createProgram(menu,ex2,2);
+        createProgram(menu,ex3,3);
+        createProgram(menu,ex4,4);
+        createProgram(menu,ex5,5);
+        createProgram(menu,ex6,6);
+        createProgram(menu,ex7,7);
+        createProgram(menu,ex8,8);
+        createProgram(menu,ex9,9);
+        createProgram(menu,ex10,10);
         menu.show();
     }
 
-    private static Controller createProgramController(IStatement ex,String log_file_name){
+    private static void createProgram(TextMenu menu,IStatement example,int id){
+        MyIDictionary<String, Type> typeEnv = new MyDictionary<String, Type>();
+        try {
+            example.typecheck(typeEnv);
+        }
+        catch (Exception e){
+            System.out.println(id+": "+e);
+            return;
+        }
+        String stringId = Integer.toString(id);
+        Controller controller = createProgramController(example,"logs"+stringId+".txt",id);
+        menu.addCommand(new RunCommand(stringId,"Example "+stringId,controller));
+    }
+
+    private static Controller createProgramController(IStatement ex,String log_file_name,int id){
         ExecutionStack stack = new ExecutionStack();
         SymbolTable symT = new SymbolTable();
         Output out = new Output();
         FileTable file_table = new FileTable();
-        ProgramState programstate = new ProgramState(stack, symT, out,file_table, ex);
+        HeapTable heap_table = new HeapTable();
+        ProgramState programstate = new ProgramState(stack, symT, out,file_table,heap_table, ex);
         IRepository repo = new Repository(log_file_name);
         repo.add(programstate);
         return new Controller(repo,true);

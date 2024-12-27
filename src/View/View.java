@@ -43,7 +43,8 @@ public class View {
         SymbolTable symT = new SymbolTable();
         Output out = new Output();
         FileTable file_table = new FileTable();
-        ProgramState programstate = new ProgramState(stack, symT, out,file_table, ex3);
+        HeapTable heap_table = new HeapTable();
+        ProgramState programstate = new ProgramState(stack, symT, out,file_table,heap_table, ex3);
 
         IRepository repo = new Repository("logs.txt");
         repo.add(programstate);

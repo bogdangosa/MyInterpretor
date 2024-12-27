@@ -14,6 +14,10 @@ public class MyDictionary<K, V>  implements MyIDictionary<K, V>{
         this.map = new HashMap<K, V>();
     }
 
+    public MyDictionary( Map<K, V> map) {
+        this.map = map;
+    }
+
     @Override
     public void put(K key, V value) {
         map.put(key, value);
@@ -39,6 +43,25 @@ public class MyDictionary<K, V>  implements MyIDictionary<K, V>{
     @Override
     public boolean isDefined(K key){
         return map.containsKey(key);
+    }
+
+    @Override
+    public void setContent(Map<K, V> content) {
+        map = content;
+    }
+
+    @Override
+    public Map<K, V> getContent() {
+        return map;
+    }
+
+    @Override
+    public MyIDictionary<K, V>  deepCopy() {
+        Map<K,V> copy_map = new HashMap<K, V>();
+        for(K key : map.keySet()){
+            copy_map.put(key, map.get(key));
+        }
+        return new MyDictionary<K, V>(copy_map);
     }
 
     @Override

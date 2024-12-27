@@ -24,12 +24,18 @@ public class VarDeclStmt implements IStatement{
             symbol_table.put(id,type.defaultValue());
         }
         else throw new SymbolTableException("Variable was already declared!");
-        return state;
+        return null;
     }
 
     @Override
     public IStatement deepCopy() {
         return new VarDeclStmt(id, type.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, Type> typecheck(MyIDictionary<String, Type> typeEnv) throws MyException {
+        typeEnv.put(id,type);
+        return typeEnv;
     }
 
     @Override

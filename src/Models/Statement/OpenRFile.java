@@ -1,6 +1,7 @@
 package Models.Statement;
 
 import Containers.MyIDictionary;
+import Exceptions.ExpressionException;
 import Exceptions.MyException;
 import Exceptions.MyIOException;
 import Models.Exp.Exp;
@@ -8,6 +9,7 @@ import Models.ProgramState.FileTable;
 import Models.ProgramState.ProgramState;
 import Models.ProgramState.SymbolTable;
 import Models.Type.StringType;
+import Models.Type.Type;
 import Models.Value.StringValue;
 import Models.Value.Value;
 
@@ -27,7 +29,7 @@ public class OpenRFile implements IStatement{
         SymbolTable symbol_table = state.getSymbolTable();
         FileTable file_table = state.getFileTable();
 
-        Value value = exp.eval(symbol_table);
+        Value value = exp.eval(symbol_table,state.getHeapTable());
         if(!value.sameTypeAs(new StringType()))
             throw new MyException("File name is not string!");
         if(file_table.isDefined((StringValue) value))
@@ -40,12 +42,20 @@ public class OpenRFile implements IStatement{
             throw new MyIOException("File not found!");
         }
 
-        return state;
+        return null;
     }
 
     @Override
     public IStatement deepCopy() {
         return new OpenRFile(exp.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, Type> typecheck(MyIDictionary<String, Type> typeEnv) throws MyException {
+        Type typexp=exp.typecheck(typeEnv);
+        if(!typexp.equals(new StringType()))
+            throw new ExpressionException("File name is not string!");
+        return typeEnv;
     }
 
     @Override

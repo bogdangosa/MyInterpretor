@@ -10,7 +10,9 @@ import Models.Exp.Exp;
 import Models.ProgramState.FileTable;
 import Models.ProgramState.ProgramState;
 import Models.ProgramState.SymbolTable;
+import Models.Type.IntType;
 import Models.Type.StringType;
+import Models.Type.Type;
 import Models.Value.IntValue;
 import Models.Value.StringValue;
 import Models.Value.Value;
@@ -31,7 +33,7 @@ public class ReadFile implements IStatement{
     public ProgramState execute(ProgramState state) throws MyException {
         SymbolTable symbol_table = state.getSymbolTable();
         FileTable file_table = state.getFileTable();
-        Value value = exp.eval(symbol_table);
+        Value value = exp.eval(symbol_table,state.getHeapTable());
 
         if(!value.sameTypeAs(new StringType()))
             throw new ExpressionException(exp.toString()+" is not a string");
@@ -51,12 +53,24 @@ public class ReadFile implements IStatement{
             throw new MyIOException(e.toString());
         }
 
-        return state;
+        return null;
     }
 
     @Override
     public IStatement deepCopy() {
-        return null;
+        return new ReadFile(exp, id);
+    }
+
+    @Override
+    public MyIDictionary<String, Type> typecheck(MyIDictionary<String, Type> typeEnv) throws MyException {
+        Type typeval = typeEnv.lookUp(id);
+        Type typexp=exp.typecheck(typeEnv);
+        if(!typexp.equals(new StringType()))
+            throw new ExpressionException(exp.toString()+" is not a string");
+        if(!typeval.equals(new IntType()))
+            throw new ExpressionException("variable is not of int type");
+
+        return typeEnv;
     }
 
     @Override

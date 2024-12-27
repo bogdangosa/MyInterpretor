@@ -3,8 +3,10 @@ package Models.Exp;
 import Containers.MyIDictionary;
 import Exceptions.ExpressionException;
 import Exceptions.MyException;
+import Models.ProgramState.HeapTable;
 import Models.ProgramState.SymbolTable;
 import Models.Type.IntType;
+import Models.Type.Type;
 import Models.Value.IntValue;
 import Models.Value.Value;
 
@@ -25,10 +27,10 @@ public class ArithExp implements Exp{
     }
 
     @Override
-    public Value eval(SymbolTable table) throws MyException {
+    public Value eval(SymbolTable table, HeapTable heap) throws MyException {
         Value v1,v2;
-        v1 = exp1.eval(table);
-        v2 = exp2.eval(table);
+        v1 = exp1.eval(table,heap);
+        v2 = exp2.eval(table,heap);
 
         if(!v1.sameTypeAs(new IntType()))
             throw new ExpressionException("first operand is not an integer");
@@ -58,6 +60,18 @@ public class ArithExp implements Exp{
     @Override
     public Exp deepCopy() {
         return new ArithExp(operator,exp1.deepCopy(),exp2.deepCopy());
+    }
+
+    @Override
+    public Type typecheck(MyIDictionary<String, Type> typeEnv) throws MyException {
+        Type typ1, typ2;
+        typ1=exp1.typecheck(typeEnv);
+        typ2=exp2.typecheck(typeEnv);
+        if(!typ1.equals(new IntType()))
+            throw new MyException("first operand is not an integer");
+        if(!typ2.equals(new IntType()))
+            throw new MyException("second operand is not an integer");
+        return new IntType();
     }
 
     @Override

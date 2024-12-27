@@ -13,6 +13,10 @@ public class SymbolTable implements ISymbolTable {
         map = new MyDictionary<>();
     }
 
+    public SymbolTable(MyDictionary<String,Value> map) {
+        this.map = map;
+    }
+
 
     @Override
     public String toString() {
@@ -46,5 +50,20 @@ public class SymbolTable implements ISymbolTable {
     @Override
     public boolean isDefined(String key) {
         return map.isDefined(key);
+    }
+
+    @Override
+    public void setContent(Map<String, Value> content) {
+        map.setContent(content);
+    }
+
+    @Override
+    public Map<String, Value> getContent() {
+        return this.map.getContent();
+    }
+
+    @Override
+    public ISymbolTable deepCopy(){
+        return new SymbolTable((MyDictionary)map.deepCopy());
     }
 }

@@ -3,8 +3,11 @@ package Models.Exp;
 import Containers.MyIDictionary;
 import Exceptions.ExpressionException;
 import Exceptions.MyException;
+import Models.ProgramState.HeapTable;
 import Models.ProgramState.SymbolTable;
 import Models.Type.BoolType;
+import Models.Type.IntType;
+import Models.Type.Type;
 import Models.Value.BoolValue;
 import Models.Value.Value;
 
@@ -23,14 +26,14 @@ public class LogicExp implements Exp{
     }
 
     @Override
-    public Value eval(SymbolTable table) throws MyException {
-        Value value1 = exp1.eval(table);
-        Value value2 = exp2.eval(table);
+    public Value eval(SymbolTable table, HeapTable heap) throws MyException {
+        Value value1 = exp1.eval(table,heap);
+        Value value2 = exp2.eval(table,heap);
 
         if(!value2.sameTypeAs(new BoolType()))
             throw new ExpressionException("operand1 is not a boolean");
         if(value1.sameTypeAs(new BoolType()))
-            throw new ExpressionException("operand1 is not a boolean");
+            throw new ExpressionException("operand2 is not a boolean");
 
         Value result;
         if(operator.equals(OR)){
@@ -47,5 +50,15 @@ public class LogicExp implements Exp{
     @Override
     public Exp deepCopy() {
         return new LogicExp(operator,exp1.deepCopy(),exp2.deepCopy());
+    }
+
+    @Override
+    public Type typecheck(MyIDictionary<String, Type> typeEnv) throws MyException {
+        Type typ1, typ2;
+        typ1=exp1.typecheck(typeEnv);
+        typ2=exp2.typecheck(typeEnv);
+        if(!typ1.equals(new BoolType()) || !typ2.equals(new BoolType()))
+            throw new MyException("operand is not a boolean");
+        return new BoolType();
     }
 }

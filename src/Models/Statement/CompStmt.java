@@ -1,9 +1,11 @@
 package Models.Statement;
 
+import Containers.MyIDictionary;
 import Containers.MyIStack;
 import Exceptions.MyException;
 import Models.ProgramState.ExecutionStack;
 import Models.ProgramState.ProgramState;
+import Models.Type.Type;
 
 public class CompStmt implements IStatement {
 
@@ -26,12 +28,17 @@ public class CompStmt implements IStatement {
         ExecutionStack stk=state.getExecutionStack();
         stk.push(second);
         stk.push(first);
-        return state;
+        return null;
     }
 
     @Override
     public IStatement deepCopy() {
         return new CompStmt(first.deepCopy(), second.deepCopy());
+    }
+
+    @Override
+    public MyIDictionary<String, Type> typecheck(MyIDictionary<String, Type> typeEnv) throws MyException {
+        return second.typecheck(first.typecheck(typeEnv));
     }
 
     @Override
