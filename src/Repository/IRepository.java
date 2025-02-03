@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface IRepository {
     ProgramState getCurrentProgram();
+    ProgramState getCurrentProgram(int programId);
     void add(ProgramState state);
     void logProgramState(ProgramState currentProgram) throws MyException;
     void setProgramList(List<ProgramState> newProgramList);

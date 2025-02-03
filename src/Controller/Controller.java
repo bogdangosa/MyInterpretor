@@ -2,8 +2,7 @@ package Controller;
 import Exceptions.ExecutionException;
 import Exceptions.MyException;
 import Exceptions.MyIOException;
-import Models.ProgramState.ExecutionStack;
-import Models.ProgramState.ProgramState;
+import Models.ProgramState.*;
 import Models.Statement.IStatement;
 import Models.Value.RefValue;
 import Models.Value.Value;
@@ -16,16 +15,19 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class Controller {
     private IRepository repo;
     private boolean display_flag;
     ExecutorService executor;
+    public static ReentrantLock lock;
 
     public Controller(IRepository repo, boolean display_flag) {
         this.repo = repo;
         this.display_flag = display_flag;
+        lock = new ReentrantLock();
     }
 
     private ProgramState oneStep(ProgramState state) throws MyException {
@@ -66,23 +68,34 @@ public class Controller {
         }
     }
 
-    public void allStep(){
+    public void initialize(){
         executor = Executors.newFixedThreadPool(2);
+        //remove the completed programs
+        List<ProgramState>  prgList=removeCompletedPrograms(repo.getProgramList());
+    }
+
+
+    public void allStep(){
+        //executor = Executors.newFixedThreadPool(2);
         //remove the completed programs
         List<ProgramState>  prgList=removeCompletedPrograms(repo.getProgramList());
         while(prgList.size() > 0){
             oneStepForAllPrg();
-            //remove the removeCompletedPrograms programs
             prgList=removeCompletedPrograms(repo.getProgramList());
-            repo.setProgramList(prgList);
         }
         executor.shutdownNow();
 
     }
 
-    void oneStepForAllPrg(){
+    public void oneStepForAllPrg(){
+
         //before the execution, print the PrgState List into the log file
         List<ProgramState>  prgList=repo.getProgramList();
+
+        //remove the removeCompletedPrograms programs
+        prgList=removeCompletedPrograms(repo.getProgramList());
+        repo.setProgramList(prgList);
+
         prgList.forEach(this::displayState);
         List<Callable<ProgramState>> callList = prgList.stream()
                 .map((ProgramState p) -> (Callable<ProgramState>)(() -> {return p.oneStep();}))
@@ -155,6 +168,35 @@ public class Controller {
         return inPrgList.stream()
                 .filter(p -> p.isNotCompleted())
                 .collect(Collectors.toList());
+    }
+
+    public int getNrOfProgramStates(){
+        return repo.getProgramList().size();
+    }
+
+
+    public Output getOutput(){
+        return repo.getCurrentProgram().getOutput();
+    }
+
+    public FileTable getFileTable(){
+        return repo.getCurrentProgram().getFileTable();
+    }
+
+    public SemaphoreTable getSemaphoreTable(){
+        return repo.getCurrentProgram().getSemaphoreTable();
+    }
+
+    public SymbolTable getSymbolTableOfProgramState(int programId){
+        return repo.getCurrentProgram(programId).getSymbolTable();
+    }
+
+    public HeapTable getHeapTableOfProgramState(int programId){
+        return repo.getCurrentProgram(programId).getHeapTable();
+    }
+
+    public ExecutionStack getExecutionStackOfProgramState(int programId){
+        return repo.getCurrentProgram(programId).getExecutionStack();
     }
 
 }

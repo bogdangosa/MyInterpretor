@@ -28,6 +28,13 @@ public class Repository implements IRepository {
         return programStates.getFirst();
     }
 
+
+    @Override
+    public ProgramState getCurrentProgram(int programId) {
+        return programStates.get(programId);
+    }
+
+
     @Override
     public void add(ProgramState state) {
         this.programStates.add(state);

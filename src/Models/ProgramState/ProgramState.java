@@ -13,6 +13,7 @@ public class ProgramState {
     private Output output;
     private FileTable file_table;
     private HeapTable heap_table;
+    private SemaphoreTable semaphore_table;
     private int id;
     public static int maxId = 1;
 
@@ -38,6 +39,8 @@ public class ProgramState {
 
     public HeapTable getHeapTable() {return heap_table;}
 
+    public SemaphoreTable getSemaphoreTable() {return semaphore_table;}
+
     public Boolean isNotCompleted() {
         return !execution_stack.isEmpty();
     }
@@ -50,12 +53,13 @@ public class ProgramState {
         return id;
     }
 
-    public ProgramState(ExecutionStack execution_stack, SymbolTable symbol_table, Output out,FileTable file_table,HeapTable heap_table, IStatement prog) {
+    public ProgramState(ExecutionStack execution_stack, SymbolTable symbol_table, Output out,FileTable file_table,HeapTable heap_table,SemaphoreTable semaphore_table, IStatement prog) {
         this.execution_stack = execution_stack;
         this.symbol_table = symbol_table;
         this.output = out;
         this.file_table = file_table;
         this.heap_table = heap_table;
+        this.semaphore_table = semaphore_table;
         this.id = initializeId();
 
         this.original_program = prog;

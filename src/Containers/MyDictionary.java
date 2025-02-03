@@ -6,15 +6,16 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MyDictionary<K, V>  implements MyIDictionary<K, V>{
-    private Map<K, V> map;
+    private ConcurrentHashMap<K, V> map;
 
     public MyDictionary() {
-        this.map = new HashMap<K, V>();
+        this.map = new ConcurrentHashMap<>();
     }
 
-    public MyDictionary( Map<K, V> map) {
+    public MyDictionary( ConcurrentHashMap<K, V> map) {
         this.map = map;
     }
 
@@ -47,7 +48,7 @@ public class MyDictionary<K, V>  implements MyIDictionary<K, V>{
 
     @Override
     public void setContent(Map<K, V> content) {
-        map = content;
+        map = new ConcurrentHashMap<>(content);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class MyDictionary<K, V>  implements MyIDictionary<K, V>{
 
     @Override
     public MyIDictionary<K, V>  deepCopy() {
-        Map<K,V> copy_map = new HashMap<K, V>();
+        ConcurrentHashMap<K,V> copy_map = new ConcurrentHashMap<K, V>();
         for(K key : map.keySet()){
             copy_map.put(key, map.get(key));
         }

@@ -44,7 +44,8 @@ public class View {
         Output out = new Output();
         FileTable file_table = new FileTable();
         HeapTable heap_table = new HeapTable();
-        ProgramState programstate = new ProgramState(stack, symT, out,file_table,heap_table, ex3);
+        SemaphoreTable semaphore_table = new SemaphoreTable();
+        ProgramState programstate = new ProgramState(stack, symT, out,file_table,heap_table,semaphore_table, ex3);
 
         IRepository repo = new Repository("logs.txt");
         repo.add(programstate);

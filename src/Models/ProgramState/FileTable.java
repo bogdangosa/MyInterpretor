@@ -6,6 +6,8 @@ import Models.Value.StringValue;
 import Models.Value.Value;
 
 import java.io.BufferedReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class FileTable implements IFileTable {
@@ -39,6 +41,15 @@ public class FileTable implements IFileTable {
     @Override
     public boolean isDefined(StringValue key) {
         return this.file_table.isDefined(key);
+    }
+
+    @Override
+    public List<String> toList() {
+        List<String> list = new ArrayList<String>();
+        for(Map.Entry<StringValue,BufferedReader> entity: file_table.getAll().entrySet()){
+           list.add(entity.getKey().toString());
+        }
+        return list;
     }
 
     @Override

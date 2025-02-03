@@ -2,7 +2,10 @@ package Models.ProgramState;
 
 import Containers.MyDictionary;
 import Models.Value.Value;
+import javafx.util.Pair;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -60,6 +63,15 @@ public class SymbolTable implements ISymbolTable {
     @Override
     public Map<String, Value> getContent() {
         return this.map.getContent();
+    }
+
+    @Override
+    public List<Pair<String, String>> ToList() {
+        List<Pair<String, String>> list = new ArrayList<>();
+        for(Map.Entry<String,Value> entity: map.getAll().entrySet()) {
+            list.add(new Pair<>(entity.getKey(), entity.getValue().toString()));
+        }
+        return list;
     }
 
     @Override

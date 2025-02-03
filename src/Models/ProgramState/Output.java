@@ -19,6 +19,10 @@ public class Output implements IOutput {
         return str;
     }
 
+    public MyList<Value> getOutputList(){
+        return list;
+    }
+
     @Override
     public void add(Value elem) {
         list.add(elem);

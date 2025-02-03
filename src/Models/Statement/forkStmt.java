@@ -21,7 +21,8 @@ public class forkStmt implements IStatement{
                         (SymbolTable) state.getSymbolTable().deepCopy(),
                         state.getOutput(),
                         state.getFileTable(),
-                        state.getHeapTable(),stmt);
+                        state.getHeapTable(),
+                        state.getSemaphoreTable(),stmt);
     }
 
     @Override

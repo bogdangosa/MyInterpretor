@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.MainWindowController">
+    <children>
+      <HBox prefHeight="444.0" prefWidth="722.0" spacing="16.0">
+         <children>
+              <VBox prefHeight="400.0" prefWidth="200.0">
+                  <HBox spacing="16.0">
+                      <Button fx:id="backButton" alignment="CENTER" mnemonicParsing="false" text="Back" />
+                      <Button fx:id="oneStepButton" alignment="CENTER" mnemonicParsing="false" text="one step" />
+                      <Button fx:id="allStepButton" mnemonicParsing="false" text="all step" />
+                      <VBox.margin>
+                          <Insets bottom="16.0" />
+                      </VBox.margin>
+                  </HBox>
+              <Text fx:id="ProgramStatesCounter" text="Nr of program states: 0" />
+               <ListView fx:id="programStatesListView" prefHeight="79.0" prefWidth="172.0">
+                  <VBox.margin>
+                     <Insets bottom="8.0" />
+                  </VBox.margin></ListView>
+               <Label text="Execution Stack" />
+               <ListView fx:id="ExecutionStackListView" prefHeight="235.0" prefWidth="200.0" />
+              </VBox>
+            <VBox prefHeight="289.0" prefWidth="143.0">
+               <children>
+                  <Label text="Output" />
+                  <ListView fx:id="OutListView" prefHeight="94.0" prefWidth="143.0">
+                     <VBox.margin>
+                        <Insets bottom="9.0" />
+                     </VBox.margin></ListView>
+                  <Label text="Files" />
+                  <ListView fx:id="fileTableListView" prefHeight="83.0" prefWidth="143.0" />
+                   <Label text="Symbol Table" />
+                  <TableView fx:id="symbolTable" prefHeight="160.0" prefWidth="143.0">
+                    <columns>
+                      <TableColumn fx:id="NameColumn" prefWidth="75.0" text="name" />
+                      <TableColumn fx:id="ValueColumn" prefWidth="75.0" text="value" />
+                    </columns>
+                  </TableView>
+               </children>
+            </VBox>
+            <VBox prefHeight="412.0" prefWidth="228.0">
+               <children>
+                   <Label text="Heap Table" />
+                  <TableView fx:id="heapTable" prefHeight="202.0" prefWidth="195.0">
+                    <columns>
+                      <TableColumn fx:id="HeapAdressColumn" prefWidth="75.0" text="adress" />
+                      <TableColumn fx:id="HeapValueColumn" prefWidth="75.0" text="value" />
+                    </columns>
+                  </TableView>
+                  <Label layoutX="10.0" layoutY="10.0" text="Semaphore Table" />
+                  <TableView fx:id="semaphoreTable" prefHeight="161.0" prefWidth="155.0">
+                    <columns>
+                      <TableColumn fx:id="semaphoreIndexColumn" prefWidth="75.0" text="index" />
+                      <TableColumn fx:id="semaphoreSizeColumn" prefWidth="75.0" text="size" />
+                        <TableColumn fx:id="semaphoreListColumn" prefWidth="75.0" text="list" />
+                    </columns>
+                  </TableView>
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+         </padding>
+      </HBox>
+    </children>
+</AnchorPane>
